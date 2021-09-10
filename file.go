@@ -18,13 +18,13 @@ import (
 )
 
 // Read File And Parse To Struct
-func (c *Otel) Load(file string, l interface{}) error {
-	c, err := c.Read(file)
+func (c *Otel) LoadFile(file string, l interface{}) error {
+	f, err := c.Read(file)
 	if err != nil {
 		return err
 	}
 
-	err = c.Parse(path.Ext(file), c, l)
+	err = c.Parse(path.Ext(file), f, l)
 	return err
 }
 
