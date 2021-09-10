@@ -67,13 +67,13 @@ func init() {
 }
 
 // Set Grpc Export
-func (c *Otel) SetGrpcExport(ctx context.Context, filename, key, serviceName, version string) error {
+func (c *Otel) SetGrpcExport(ctx context.Context, filename,  serviceName, version string) error {
     if c.IsWork() == nil {
         return TraceExportAlreadySet
     }
 
     params := make(map[string]string)
-    err := LoadFile(filename, key, &params)
+    err := LoadFile(filename, &params)
     if err != nil {
         return err
     }
