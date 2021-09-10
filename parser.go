@@ -3,7 +3,7 @@
  * Modify From-https://github.com/toniz/gudp
  */
 
-package parser
+package trace
 
 import (
     "errors"
