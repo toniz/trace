@@ -1,11 +1,10 @@
-
 package pack1
 
 import (
     "context"
     "errors"
-    tracelog "github.com/toniz/otel"
 
+    tracelog "github.com/toniz/otel"
     pack2 "github.com/toniz/otel/demo/pack2"
 )
 

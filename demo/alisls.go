@@ -13,8 +13,7 @@ import (
     tracelog "github.com/toniz/otel"
 
     // test trace in package
-    pack1 "github.com/toniz/otel/demo/pack1"
-    pack2 "github.com/toniz/otel/demo/pack2"
+    . "github.com/toniz/otel/demo/pack1"
 )
 
 var rc *redis.Client
@@ -36,8 +35,7 @@ func main() {
     hello2Handler := func(w http.ResponseWriter, req *http.Request) {
         ctx := req.Context()
         c1 := pack1.CallLevel_1(ctx)
-        c2 := pack2.CallLevel_2(ctx)
-        w.Write([]byte(c1+c2))
+        w.Write([]byte(c1))
     }
 
     rc = redis.NewClient(&redis.Options{
