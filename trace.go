@@ -29,8 +29,8 @@ func SetTracer(l Tracer) {
     tracer = l
 }
 
-func SetGrpcExport(ctx context.Context, filename, key, serviceName, version string) error {
-    return tracer.SetGrpcExport(ctx, filename, key, serviceName, version)
+func SetGrpcExport(ctx context.Context, filename, serviceName, version string) error {
+    return tracer.SetGrpcExport(ctx, filename, serviceName, version)
 }
 
 func SetDefaultExport(ctx context.Context, serviceName, version string) error {

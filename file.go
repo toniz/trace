@@ -17,6 +17,17 @@ import (
     "gopkg.in/yaml.v2"
 )
 
+// Read File And Parse To Struct
+func (c *Otel) Load(file string, l interface{}) error {
+	c, err := c.Read(file)
+	if err != nil {
+		return err
+	}
+
+	err = c.Parse(path.Ext(file), c, l)
+	return err
+}
+
 // Read a file, And return file content by []byte
 func (c *Otel) Read(file string) ([]byte, error) {
 	s, err := os.Stat(file)
@@ -35,17 +46,6 @@ func (c *Otel) Read(file string) ([]byte, error) {
 		content, err = ioutil.ReadAll(fileHandler)
 	}
 	return content, err
-}
-
-// Read File And Parse To Struct
-func (c *Otel) Load(file string, l interface{}) error {
-	c, err := Read(file)
-	if err != nil {
-		return err
-	}
-
-	err = Parse(path.Ext(file), c, l)
-	return err
 }
 
 // File Parse

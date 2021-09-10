@@ -73,7 +73,7 @@ func (c *Otel) SetGrpcExport(ctx context.Context, filename,  serviceName, versio
     }
 
     params := make(map[string]string)
-    err := LoadFile(filename, &params)
+    err := c.LoadFile(filename, &params)
     if err != nil {
         return err
     }
