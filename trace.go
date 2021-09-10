@@ -10,7 +10,7 @@ import (
 )
 
 type Tracer interface {
-    SetGrpcExport(ctx context.Context, filename, key, serviceName, version string) error
+    SetGrpcExport(ctx context.Context, filename, serviceName, version string) error
     SetDefaultExport(ctx context.Context, serviceName, version string) error
     Close(ctx context.Context) error
     IsWork() error
