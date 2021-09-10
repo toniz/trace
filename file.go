@@ -3,7 +3,7 @@
  * Modify From-https://github.com/toniz/gudp
  */
 
-package fileloader
+package trace
 
 import (
 	"io/ioutil"
