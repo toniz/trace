@@ -18,7 +18,7 @@ import (
 )
 
 // Read a file, And return file content by []byte
-func Read(file string) ([]byte, error) {
+func (c *Otel) Read(file string) ([]byte, error) {
 	s, err := os.Stat(file)
 	if err != nil {
 		return nil, err
@@ -38,8 +38,8 @@ func Read(file string) ([]byte, error) {
 }
 
 // Read File And Parse To Struct
-func Load(file string, l interface{}) error {
-	c, err := f.Read(file)
+func (c *Otel) Load(file string, l interface{}) error {
+	c, err := Read(file)
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func Load(file string, l interface{}) error {
 }
 
 // File Parse
-func Parse(name string, text []byte, l interface{}) error {
+func (c *Otel) Parse(name string, text []byte, l interface{}) error {
     switch name {
     case "json", ".json":
         t := string(text)
