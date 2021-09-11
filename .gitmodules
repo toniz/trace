@@ -1,0 +1,3 @@
+[submodule "sls-demo"]
+	path = sls-demo
+	url = https://github.com/toniz/SLS-Aliyun
