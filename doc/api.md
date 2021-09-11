@@ -1,5 +1,5 @@
 ### 函数说明：
-1. 使用GRPC协议把日志传到远程的GPRC服务器上, 如阿里云的SLS.
+1. SetGrpcExport  使用GRPC协议把日志传到远程的GPRC服务器上, 如阿里云的SLS.
 ```
 SetGrpcExport(ctx context.Context, filename, serviceName, version string) error
 参数说明:
@@ -9,7 +9,7 @@ SetGrpcExport(ctx context.Context, filename, serviceName, version string) error
   * version 这个应用版本号. 如: v1.3.10
 ```
 ---  
-2. 使用默认导出，既直接打印到stdout.
+2. SetDefaultExport 使用默认导出，既直接打印到stdout.
 ```
 SetDefaultExport(ctx context.Context, serviceName, version string) error
 参数说明:
@@ -17,7 +17,7 @@ SetDefaultExport(ctx context.Context, serviceName, version string) error
   * version 这个应用版本号.
 ```
 ---
-3. 给http请求加上hook.
+3. NewHandler  给http请求加上hook.
 ```
   NewHandler(handler http.Handler, name string) http.Handler
 参数说明:
@@ -25,7 +25,7 @@ SetDefaultExport(ctx context.Context, serviceName, version string) error
   * name: 这个http方法的名字,如：getuser
 ```
 ---
-4. 创建一个span  
+4. NewSpan 创建一个span  
 ```
 NewSpan(ctx context.Context, name string, kind int) (context.Context, error)
 参数说明:
@@ -40,14 +40,14 @@ NewSpan(ctx context.Context, name string, kind int) (context.Context, error)
      5: SpanKindConsumer 
 ```
 
-5. 结束当前span
+5. EndSpan 结束当前span
 ```
 EndSpan(ctx context.Context) error
 参数说明：
   * ctx: NewSpan返回的context.
 ```
 
-6. 添加属性
+6. AddSpanAttribute 添加属性
 ```
 AddSpanAttribute(ctx context.Context, params map[string]string) error
 参数说明:
@@ -56,7 +56,7 @@ AddSpanAttribute(ctx context.Context, params map[string]string) error
 说明: 一次可以设置多个参数，也可以多次调用.
 ```
 
-7. 添加事件
+7. AddSpanEvent 添加事件
 ```
 AddSpanEvent(ctx context.Context, event string, params map[string]string) error
 参数说明:
@@ -66,29 +66,33 @@ AddSpanEvent(ctx context.Context, event string, params map[string]string) error
 说明: 一次可以设置多个参数，也可以多次调用.
 ```
 
-8. 设置状态
+8. SetSpanOK 设置状态为成功
 ```
 SetSpanOK(ctx context.Context, message string) error
 参数说明:
   * ctx: NewSpan返回的context.
   * message: 随意文本
-
+```
+9. SetSpanError 设置状态为失败
+```
 SetSpanError(ctx context.Context, err error) error
 参数说明:
   * ctx: NewSpan返回的context.
   * err: 报错的error.
 ```
 
-9. 检查trace是否可用
+10. IsWork 检查trace是否可用
 ```
 IsWork() error
 前面所有函数内部都会调用这个方法。所以不必重复调用。
 ```
 
-10. 关闭trace
+11. 关闭trace
 ```
 Close(ctx context.Context) error
 SetGrpcExport或者SetDefaultExport之后可以加上defer func(){Close(ctx)}();
 ```
+
+
 etc..
 
