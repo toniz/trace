@@ -1,5 +1,5 @@
-# 封装多种trace服务
-目的是使记录trace日志变得和使用glog一样简单高效。
+# 封装多种trace协议
+目的是让记录trace日志变得和使用glog一样简单高效。
 * 支持OpenTelemetry协议。封装了OpenTelemetry-Go.
 * 支持zipkin协议。
 
@@ -45,8 +45,8 @@ func call_level_3(ctx context.Context) {
 ```
 
 ### 其它文档：
-[api文档](doc/api.md)
-[阿里云SLS服务接入例子](sls-demo/)
+[api文档](doc/api.md)    
+[阿里云SLS服务接入例子](sls-demo/)    
 
  
 etc..
