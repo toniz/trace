@@ -1,5 +1,5 @@
 # 封装多种trace协议
-目的是让记录trace日志变得和使用glog一样简单高效。    
+目的是让GO记录trace日志变得和使用glog一样简单高效。    
 * 支持OpenTelemetry协议。封装了OpenTelemetry-Go.
 * 支持zipkin协议。
 
