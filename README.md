@@ -11,19 +11,19 @@ _ https://github.com/toniz/trace/zipkin
 ```
 
 ## 使用步骤(以sls-demo为例子):
-1. 引入：
+1. **引入**：
 ```
 improt tracelog "github.com/toniz/trace"
 ```
-2. 初始化trace, 指定日志写到哪里:
+2. **初始化trace, 指定日志写到哪里**:
 ```
 err := tracelog.SetGrpcExport(ctx, "trace_config.json", "OrderService", "v0.3.10")
 ```
-3. 对http服务设置hook。这个http请求会被trace捕捉并上报。
+3. **对http服务设置hook。这个http请求会被trace捕捉并上报**。
 ```
 http.Handle("/hello", tracelog.NewHandler(http.HandlerFunc(helloHandler), "Hello"))
 ```
-4. 在被调用的函数里面创建span,添加该函数关键属性或事件:
+4. **在被调用的函数里面创建span,添加该函数关键属性或事件**:
 ```
 func call_level_3(ctx context.Context) {
     // 继承函数调用的context, 创建子的span
