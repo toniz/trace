@@ -1,5 +1,5 @@
 # 封装多种trace协议
-目的是让记录trace日志变得和使用glog一样简单高效。
+目的是让记录trace日志变得和使用glog一样简单高效。    
 * 支持OpenTelemetry协议。封装了OpenTelemetry-Go.
 * 支持zipkin协议。
 
@@ -23,8 +23,9 @@ err := tracelog.SetGrpcExport(ctx, "trace_config.json", "OrderService", "v0.3.10
 ```
 http.Handle("/hello", tracelog.NewHandler(http.HandlerFunc(helloHandler), "Hello"))
 ```
-4. **在被调用的函数里面创建span,添加该函数关键属性或事件**:
+4. **在被调用的函数里面创建span,添加该函数关键属性或事件(可选)**:
 ```
+// 追踪的函数需要带上context来传递上下文信息。
 func call_level_3(ctx context.Context) {
     // 继承函数调用的context, 创建子的span
     ctxc, _ := tracelog.NewSpan(ctx, "call_level_3", tracelog.OtelSpanKindProducer)
