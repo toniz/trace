@@ -46,7 +46,7 @@ func call_level_3(ctx context.Context) {
 
 ### 其它文档：
 [api文档](doc/api.md)    
-[阿里云SLS服务接入例子](sls-demo/)    
+[阿里云SLS服务接入例子](https://github.com/toniz/SLS-Aliyun)    
 
  
 etc..
