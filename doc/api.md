@@ -19,7 +19,7 @@ SetDefaultExport(ctx context.Context, serviceName, version string) error
 ---
 3. NewHandler  给http请求加上hook.
 ```
-  NewHandler(handler http.Handler, name string) http.Handler
+NewHandler(handler http.Handler, name string) http.Handler
 参数说明:
   * handler: http句柄
   * name: 这个http方法的名字,如：getuser
@@ -39,7 +39,7 @@ NewSpan(ctx context.Context, name string, kind int) (context.Context, error)
      4: SpanKindProducer
      5: SpanKindConsumer 
 ```
-
+---
 5. EndSpan 结束当前span
 ```
 EndSpan(ctx context.Context) error
@@ -47,6 +47,7 @@ EndSpan(ctx context.Context) error
   * ctx: NewSpan返回的context.
 ```
 
+---
 6. AddSpanAttribute 添加属性
 ```
 AddSpanAttribute(ctx context.Context, params map[string]string) error
@@ -56,6 +57,7 @@ AddSpanAttribute(ctx context.Context, params map[string]string) error
 说明: 一次可以设置多个参数，也可以多次调用.
 ```
 
+---
 7. AddSpanEvent 添加事件
 ```
 AddSpanEvent(ctx context.Context, event string, params map[string]string) error
@@ -66,6 +68,7 @@ AddSpanEvent(ctx context.Context, event string, params map[string]string) error
 说明: 一次可以设置多个参数，也可以多次调用.
 ```
 
+---
 8. SetSpanOK 设置状态为成功
 ```
 SetSpanOK(ctx context.Context, message string) error
@@ -73,6 +76,7 @@ SetSpanOK(ctx context.Context, message string) error
   * ctx: NewSpan返回的context.
   * message: 随意文本
 ```
+---
 9. SetSpanError 设置状态为失败
 ```
 SetSpanError(ctx context.Context, err error) error
@@ -81,18 +85,21 @@ SetSpanError(ctx context.Context, err error) error
   * err: 报错的error.
 ```
 
+---
 10. IsWork 检查trace是否可用
 ```
 IsWork() error
 前面所有函数内部都会调用这个方法。所以不必重复调用。
 ```
 
+---
 11. 关闭trace
 ```
 Close(ctx context.Context) error
 SetGrpcExport或者SetDefaultExport之后可以加上defer func(){Close(ctx)}();
 ```
 
+---
 
 etc..
 
