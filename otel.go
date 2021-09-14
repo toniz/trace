@@ -9,6 +9,9 @@ import (
     "time"
     "context"
     "errors"
+    "strconv"
+    "io/ioutil"
+    "bytes"
 
     "google.golang.org/grpc/credentials"
     "google.golang.org/grpc/encoding/gzip"
@@ -45,13 +48,12 @@ const (
 )
 
 var (
+    TraceExportNotSupport error = errors.New("TraceExportNotSupport")
     TraceExportAlreadySet error = errors.New("TraceExportAlreadySet")
     TraceConfigCheckFailed error = errors.New("TraceConfigCheckFailed")
-    TraceGatewayConnectFailed error = errors.New("TraceGatewayConnectFailed")
-    TraceSetDefaultExportFailed error = errors.New("TraceSetDefaultExportFailed")
-    TraceNewResourceFailed error = errors.New("TraceNewResourceFailed")
     TraceNotWork error = errors.New("TraceNotWork")
     TraceEndSpanFailed error = errors.New("TraceEndSpanFailed")
+    TraceHttpCodeError error = errors.New("TraceHttpCodeError")
 )
 
 
@@ -64,6 +66,11 @@ type Otel struct {
 func init() {
     s := new(Otel)
     SetTracer(s)
+}
+
+// Set Http Export
+func (c *Otel) SetHttpExport(ctx context.Context, filename, key, serviceName, version string) error {
+    return TraceExportNotSupport
 }
 
 // Set Grpc Export
@@ -111,7 +118,7 @@ func (c *Otel) SetGrpcExport(ctx context.Context, filename,  serviceName, versio
     client := otlptracegrpc.NewClient(opts...)
     c.grpcexp, otlpErr = otlptrace.New(ctx, client)
     if otlpErr != nil {
-        return TraceGatewayConnectFailed
+        return otlpErr
     }
 
     err = c.SetGlobalProvider(ctx, serviceName, version)
@@ -131,7 +138,7 @@ func (c *Otel) SetDefaultExport(ctx context.Context, serviceName, version string
     var expErr error
     c.stdexp, expErr = stdouttrace.New(stdouttrace.WithPrettyPrint())
     if expErr != nil {
-        return TraceSetDefaultExportFailed
+        return expErr
     }
 
     err := c.SetGlobalProvider(ctx, serviceName, version)
@@ -153,7 +160,7 @@ func (c *Otel) SetGlobalProvider(ctx context.Context, serviceName, version strin
     )
 
     if rcErr != nil {
-        return TraceNewResourceFailed
+        return rcErr
     }
 
     var bsp sdktrace.SpanProcessor
@@ -196,16 +203,6 @@ func (c *Otel) IsWork() error {
     }
 
     return nil
-}
-
-// Http Handle Hook
-func (c *Otel) NewHandler(handler http.Handler, name string) http.Handler {
-    if c.IsWork() != nil {
-        return handler
-    }
-
-    opt := otelhttp.WithMessageEvents(otelhttp.ReadEvents, otelhttp.WriteEvents)
-    return otelhttp.NewHandler(handler, name, opt)
 }
 
 // Start A child Span
@@ -307,4 +304,72 @@ func (c *Otel) SetSpanError(ctx context.Context, err error) error {
     return nil
 }
 
+// Http Handle Hook
+func (c *Otel) NewHandler(handler http.Handler, name string) http.Handler {
+    if c.IsWork() != nil {
+        return handler
+    }
+
+    opt := otelhttp.WithMessageEvents(otelhttp.ReadEvents, otelhttp.WriteEvents)
+    return otelhttp.NewHandler(handler, name, opt)
+}
+
+// Http Do Function
+func (c *Otel) HttpDo(ctx context.Context, req *http.Request, name string, options ...interface{}) (*http.Response, error) {
+    client := &http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    return resp, nil
+}
+
+// Call Http Get
+func (c *Otel) HttpGet(ctx context.Context, url string, name string) (string, error) {
+    if c.IsWork() != nil {
+        return "", TraceNotWork
+    }
+
+    resp, errOH := otelhttp.Get(ctx, url)
+    if errOH != nil {
+        return "", errOH
+    }
+
+    defer resp.Body.Close()
+    resBody, errIO := ioutil.ReadAll(resp.Body)
+    if errIO != nil {
+        return "", errIO
+    }
+
+    if resp.StatusCode > 399 {
+        return "", TraceHttpCodeError
+    }
+
+    return string(resBody), nil
+}
+
+// Call Http Post
+func (c *Otel) HttpPost(ctx context.Context, url, contentType, body, name string) (string, error) {
+    if c.IsWork() != nil {
+        return "", TraceNotWork
+    }
+
+    reqBody := bytes.NewBuffer([]byte(body))
+    resp, errOH := otelhttp.Post(ctx, url, contentType, reqBody)
+    if errOH != nil {
+        return "", errOH
+    }
+
+    defer resp.Body.Close()
+    resBody, errIO := ioutil.ReadAll(resp.Body)
+    if errIO != nil {
+        return "", errIO
+    }
+
+    if resp.StatusCode > 399 {
+        return "", TraceHttpCodeError
+    }
+
+    return string(resBody), nil 
+}
 

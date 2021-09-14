@@ -14,13 +14,18 @@ type Tracer interface {
     SetDefaultExport(ctx context.Context, serviceName, version string) error
     Close(ctx context.Context) error
     IsWork() error
-    NewHandler(handler http.Handler, name string) http.Handler
+
     NewSpan(ctx context.Context, name string, kind int) (context.Context, error)
     EndSpan(ctx context.Context) error
     AddSpanAttribute(ctx context.Context, params map[string]string) error
     AddSpanEvent(ctx context.Context, event string, params map[string]string) error
     SetSpanOK(ctx context.Context, message string) error
     SetSpanError(ctx context.Context, err error) error
+
+    NewHandler(handler http.Handler, name string) http.Handler
+    HttpDo(ctx context.Context, req *http.Request, name string, options ...interface{}) (*http.Response, error)
+    HttpGet(ctx context.Context, url, name string) (string, error)
+    HttpPost(ctx context.Context, url, contentType, body, name string) (string, error)
 }
 
 var tracer Tracer
@@ -43,10 +48,6 @@ func Close(ctx context.Context) error {
 
 func IsWork() error {
     return tracer.IsWork()
-}
-
-func NewHandler(handler http.Handler, name string) http.Handler {
-    return tracer.NewHandler(handler, name)
 }
 
 func NewSpan(ctx context.Context, name string, kind int) (context.Context, error) {
@@ -72,4 +73,21 @@ func SetSpanOK(ctx context.Context, message string) error {
 func SetSpanError(ctx context.Context, err error) error {
     return tracer.SetSpanError(ctx, err)
 }
+
+func NewHandler(handler http.Handler, name string) http.Handler {
+    return tracer.NewHandler(handler, name)
+}
+
+func HttpDo(ctx context.Context, req *http.Request, name string, options ...interface{}) (*http.Response, error) {
+    return tracer.HttpDo(ctx, req, name, options)
+}
+
+func HttpGet(ctx context.Context, url, name string) (string, error) {
+    return tracer.HttpGet(ctx, url, name)
+}
+
+func HttpPost(ctx context.Context, url, contentType, body, name string) (string, error) {
+    return tracer.HttpPost(ctx, url, contentType, body, name)
+}
+
 
