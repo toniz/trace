@@ -22,7 +22,7 @@ import (
     logreporter "github.com/openzipkin/zipkin-go/reporter/log"
     httpreporter "github.com/openzipkin/zipkin-go/reporter/http"
 
-    "github.com/bbthis/toniz/trace"
+    "github.com/toniz/trace"
 )
 
 const (
