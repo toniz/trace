@@ -65,7 +65,7 @@ func (c *ZipKin) SetHttpExport(ctx context.Context, filename, serviceName, versi
     }
 
     params := make(map[string]string)
-    err := LoadFile(filename, &params)
+    err := trace.LoadFile(filename, &params)
     if err != nil {
         return err
     }
