@@ -12,6 +12,7 @@ import (
     "os"
     "io/ioutil"
     "bytes"
+    "errors"
 
     model "github.com/openzipkin/zipkin-go/model"
     zipkin "github.com/openzipkin/zipkin-go"
@@ -21,7 +22,7 @@ import (
     logreporter "github.com/openzipkin/zipkin-go/reporter/log"
     httpreporter "github.com/openzipkin/zipkin-go/reporter/http"
 
-    "github.com/bbthis/gosuit/trace"
+    "github.com/bbthis/toniz/trace"
 )
 
 const (
