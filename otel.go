@@ -220,11 +220,11 @@ func (c *Otel) NewSpan(ctx context.Context, name string, kind string) (context.C
     }
 
     // Label Span Level
-    level, ok := ctx.Value("span_level").(int)
+    level, ok := ctx.Value(ContextSpanLevelKey).(int)
     if !ok {
         level = 0
     }
-    ctxl := context.WithValue(ctx, "span_level", level+1)
+    ctxl := context.WithValue(ctx, ContextSpanLevelKey, level+1)
 
     iKind, _ := strconv.Atoi(kind)
     tracer := c.tp.Tracer(semconv.SchemaURL, trace.WithInstrumentationVersion(otel.Version()))

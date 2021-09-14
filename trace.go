@@ -31,6 +31,10 @@ type Tracer interface {
 
 var tracer Tracer
 
+const (
+    ContextSpanLevelKey string = "span_level"
+);
+
 func SetTracer(l Tracer) {
     tracer = l
 }
