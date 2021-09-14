@@ -11,6 +11,7 @@ import (
     "errors"
     "io/ioutil"
     "bytes"
+    "strconv"
 
     "google.golang.org/grpc/credentials"
     "google.golang.org/grpc/encoding/gzip"
@@ -37,13 +38,15 @@ const (
     slsAccessKeyIDHeader     = "x-sls-otel-ak-id"
     slsAccessKeySecretHeader = "x-sls-otel-ak-secret"
     slsSecurityTokenHeader   = "x-sls-otel-token"
+)
 
-    OtelSpanKindUnspecified = int(trace.SpanKindUnspecified)
-    OtelSpanKindInternal = int(trace.SpanKindInternal)
-    OtelSpanKindServer = int(trace.SpanKindServer)
-    OtelSpanKindClient = int(trace.SpanKindClient)
-    OtelSpanKindProducer = int(trace.SpanKindProducer)
-    OtelSpanKindConsumer = int(trace.SpanKindConsumer)
+var (
+    OtelSpanKindUnspecified = strconv.Itoa(int(trace.SpanKindUnspecified))
+    OtelSpanKindInternal = strconv.Itoa(int(trace.SpanKindInternal))
+    OtelSpanKindServer = strconv.Itoa(int(trace.SpanKindServer))
+    OtelSpanKindClient = strconv.Itoa(int(trace.SpanKindClient))
+    OtelSpanKindProducer = strconv.Itoa(int(trace.SpanKindProducer))
+    OtelSpanKindConsumer = strconv.Itoa(int(trace.SpanKindConsumer))
 )
 
 var (
@@ -211,7 +214,7 @@ func (c *Otel) IsWork() error {
 // 3: SpanKindClient
 // 4: SpanKindProducer
 // 5: SpanKindConsumer
-func (c *Otel) NewSpan(ctx context.Context, name string, kind int) (context.Context, error) {
+func (c *Otel) NewSpan(ctx context.Context, name string, kind string) (context.Context, error) {
     if c.IsWork() != nil {
         return ctx, TraceNotWork
     }
@@ -223,8 +226,9 @@ func (c *Otel) NewSpan(ctx context.Context, name string, kind int) (context.Cont
     }
     ctxl := context.WithValue(ctx, "span_level", level+1)
 
+    iKind, _ := strconv.Atoi(kind)
     tracer := c.tp.Tracer(semconv.SchemaURL, trace.WithInstrumentationVersion(otel.Version()))
-    ctxc, _ := tracer.Start(ctxl, name, trace.WithSpanKind(trace.SpanKind(kind)))
+    ctxc, _ := tracer.Start(ctxl, name, trace.WithSpanKind(trace.SpanKind(iKind)))
     return ctxc, nil
 }
 

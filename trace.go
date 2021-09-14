@@ -16,7 +16,7 @@ type Tracer interface {
     Close(ctx context.Context) error
     IsWork() error
 
-    NewSpan(ctx context.Context, name string, kind int) (context.Context, error)
+    NewSpan(ctx context.Context, name string, kind string) (context.Context, error)
     EndSpan(ctx context.Context) error
     AddSpanAttribute(ctx context.Context, params map[string]string) error
     AddSpanEvent(ctx context.Context, event string, params map[string]string) error
@@ -55,7 +55,7 @@ func IsWork() error {
     return tracer.IsWork()
 }
 
-func NewSpan(ctx context.Context, name string, kind int) (context.Context, error) {
+func NewSpan(ctx context.Context, name string, kind string) (context.Context, error) {
     return tracer.NewSpan(ctx, name, kind)
 }
 
