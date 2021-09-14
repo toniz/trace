@@ -68,18 +68,18 @@ func init() {
 }
 
 // Set Http Export
-func (c *Otel) SetHttpExport(ctx context.Context, filename, key, serviceName, version string) error {
+func (c *Otel) SetHttpExport(ctx context.Context, filename, serviceName, version string) error {
     return TraceExportNotSupport
 }
 
 // Set Grpc Export
-func (c *Otel) SetGrpcExport(ctx context.Context, filename,  serviceName, version string) error {
+func (c *Otel) SetGrpcExport(ctx context.Context, filename, serviceName, version string) error {
     if c.IsWork() == nil {
         return TraceExportAlreadySet
     }
 
     params := make(map[string]string)
-    err := c.LoadFile(filename, &params)
+    err := LoadFile(filename, &params)
     if err != nil {
         return err
     }

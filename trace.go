@@ -10,6 +10,7 @@ import (
 )
 
 type Tracer interface {
+    SetHttpExport(ctx context.Context, filename, serviceName, version string) error
     SetGrpcExport(ctx context.Context, filename, serviceName, version string) error
     SetDefaultExport(ctx context.Context, serviceName, version string) error
     Close(ctx context.Context) error
@@ -32,6 +33,10 @@ var tracer Tracer
 
 func SetTracer(l Tracer) {
     tracer = l
+}
+
+func SetHttpExport(ctx context.Context, filename, serviceName, version string) error {
+    return tracer.SetHttpExport(ctx, filename, serviceName, version)
 }
 
 func SetGrpcExport(ctx context.Context, filename, serviceName, version string) error {

@@ -54,18 +54,18 @@ func init() {
 
 // Set GRPC Export
 // ZipKin Not Support: github.com/openzipkin/zipkin-go
-func (c *ZipKin) SetGrpcExport(ctx context.Context, filename, key, serviceName, version string) error {
+func (c *ZipKin) SetGrpcExport(ctx context.Context, filename, serviceName, version string) error {
     return TraceExportNotSupport
 }
 
 // Set Http Export
-func (c *ZipKin) SetHttpExport(ctx context.Context, filename, key, serviceName, version string) error {
+func (c *ZipKin) SetHttpExport(ctx context.Context, filename, serviceName, version string) error {
     if c.IsWork() == nil {
         return TraceExportAlreadySet
     }
 
     params := make(map[string]string)
-    err := LoadFile(filename, key, &params)
+    err := LoadFile(filename, &params)
     if err != nil {
         return err
     }
@@ -73,7 +73,6 @@ func (c *ZipKin) SetHttpExport(ctx context.Context, filename, key, serviceName, 
     traceEndpoint := params["trace_endpoint"]
     ip := params["local_ip"]
     if len(traceEndpoint) == 0 || len(ip) == 0 {
-        glog.Warningf("Zipkin Http Export Connect Configure Check Failed: trace_endpoint[%s] local_ip[%s].", traceEndpoint, ip)
         return TraceConfigCheckFailed
     }
 
@@ -100,7 +99,6 @@ func (c *ZipKin) SetGlobalProvider(ctx context.Context, serviceName, ip string) 
     // Create Our Local Service Endpoint
     endpoint, errNE := zipkin.NewEndpoint(serviceName, ip)
     if errNE != nil {
-        glog.Warningf("Zipkin Http Export Unable To Create Local Endpoint[%s][%s]: %+v", serviceName, ip, errNE)
         return errNE
     }
 
@@ -108,7 +106,6 @@ func (c *ZipKin) SetGlobalProvider(ctx context.Context, serviceName, ip string) 
     var errNT error
     c.tp, errNT = zipkin.NewTracer(c.report, zipkin.WithLocalEndpoint(endpoint))
     if errNT != nil {
-        glog.Warningf("Zipkin Http Export Unable To Create Tracer[%+v]: %+v", c.report, errNT)
         return errNT
     }
 
@@ -228,13 +225,11 @@ func (c *ZipKin) HttpDo(ctx context.Context, req *http.Request, name string, opt
 
     client, errZK := zipkinhttp.NewClient(c.tp, opts...)
     if errZK != nil {
-        glog.Warningf("HttpDo New Client Tracer[%v] Opts[%v] Failed: %v", c.tp, opts, errZK)
         return nil, errZK
     }
 
     res, errDO := client.DoWithAppSpan(req, name)
     if errDO != nil {
-        glog.Warningf("HttpDo DoWithAppSpan[%v] Failed[%v]: %+v", name, errDO, req)
         return nil, errDO
     }
 
@@ -248,7 +243,6 @@ func (c *ZipKin) HttpGet(ctx context.Context, url, name string) (string, error) 
 
     req, errHttp := http.NewRequestWithContext(ctx, "GET", url, nil)
     if errHttp != nil {
-        glog.Warningf("HttpGet Create Request[%s] Failed: %v", url, errHttp)
         return "", errHttp
     }
 
@@ -260,12 +254,10 @@ func (c *ZipKin) HttpGet(ctx context.Context, url, name string) (string, error) 
     defer resp.Body.Close()
     resBody, errIO := ioutil.ReadAll(resp.Body)
     if errIO != nil {
-        glog.Warningf("HttpGet Request Url[%s] Read Response Failed: %v", url, errIO)
         return "", errIO
     }
 
     if resp.StatusCode > 399 {
-        glog.Warningf("HttpGet Http Request Url[%s] Return Code[%v] Failed: %+v", url, resp.StatusCode, resp)
         return "", TraceHttpCodeError
     }
 
@@ -280,7 +272,6 @@ func (c *ZipKin) HttpPost(ctx context.Context, url, contentType, body, name stri
     reqBody := bytes.NewBuffer([]byte(body))
     req, errHttp := http.NewRequestWithContext(ctx, "POST", url, reqBody)
     if errHttp != nil {
-        glog.Warningf("HttpPost Create Request[%s] Body[%s] Failed: %v", url, body, errHttp)
         return "", errHttp
     }
 
@@ -296,12 +287,10 @@ func (c *ZipKin) HttpPost(ctx context.Context, url, contentType, body, name stri
     defer resp.Body.Close()
     resBody, errIO := ioutil.ReadAll(resp.Body)
     if errIO != nil {
-        glog.Warningf("HttpGet Request Url[%s] Read Response Failed: %v", url, errIO)
         return "", errIO
     }
 
     if resp.StatusCode > 399 {
-        glog.Warningf("HttpGet Http Request Url[%s] Return Code[%v] Failed: %+v", url, resp.StatusCode, resp)
         return "", TraceHttpCodeError
     }
 
