@@ -1,6 +1,7 @@
-### 函数说明：
-1. 设置日志导出方案。  
-1.1 SetGrpcExport  使用GRPC协议把日志传到远程的GPRC服务器上, 如阿里云的SLS.
+## 函数说明：
+
+### 1. 设置日志导出方案
+* 1.1 SetGrpcExport  使用GRPC协议把日志传到远程的GPRC服务器上, 如阿里云的SLS.
 ```
 SetGrpcExport(ctx context.Context, filename, serviceName, version string) error
 参数说明:
@@ -10,7 +11,7 @@ SetGrpcExport(ctx context.Context, filename, serviceName, version string) error
   * version 这个应用版本号. 如: v1.3.10
 ```
     
-1.2 SetHttpExport 使用HTTP协议导出到远程的HTTP服务器上, 如阿里云的链路追踪服务.
+* 1.2 SetHttpExport 使用HTTP协议导出到远程的HTTP服务器上, 如阿里云的链路追踪服务.
 ```
 SetHttpExport(ctx context.Context, serviceName, version string) error
 参数说明:
@@ -18,7 +19,7 @@ SetHttpExport(ctx context.Context, serviceName, version string) error
   * version 这个应用版本号.
 ```
     
-1.3 SetDefaultExport 使用默认导出，既直接打印到stdout.
+* 1.3 SetDefaultExport 使用默认导出，既直接打印到stdout.
 ```
 SetDefaultExport(ctx context.Context, serviceName, version string) error
 参数说明:
@@ -27,15 +28,27 @@ SetDefaultExport(ctx context.Context, serviceName, version string) error
 ```
 
 ---
-3. NewHandler  给http请求加上hook.
+
+#### 2. IsWork 检查trace是否可用
 ```
-NewHandler(handler http.Handler, name string) http.Handler
-参数说明:
-  * handler: http句柄
-  * name: 这个http方法的名字,如：getuser
+IsWork() error
+前面所有函数内部都会调用这个方法。所以不必重复调用。
 ```
+
 ---
-4. NewSpan 创建一个span  
+
+#### 10. 关闭trace
+```
+Close(ctx context.Context) error
+SetGrpcExport或者SetDefaultExport之后可以加上defer func(){Close(ctx)}();
+```
+
+---
+
+
+### 2. 设置Span
+
+#### 2.1 NewSpan 创建一个span  
 ```
 NewSpan(ctx context.Context, name string, kind int) (context.Context, error)
 参数说明:
@@ -50,7 +63,7 @@ NewSpan(ctx context.Context, name string, kind int) (context.Context, error)
      5: SpanKindConsumer 
 ```
 ---
-5. EndSpan 结束当前span
+#### 2.2 EndSpan 结束当前span
 ```
 EndSpan(ctx context.Context) error
 参数说明：
@@ -58,7 +71,7 @@ EndSpan(ctx context.Context) error
 ```
 
 ---
-6. AddSpanAttribute 添加属性
+#### 2.3 AddSpanAttribute 添加属性
 ```
 AddSpanAttribute(ctx context.Context, params map[string]string) error
 参数说明:
@@ -68,7 +81,7 @@ AddSpanAttribute(ctx context.Context, params map[string]string) error
 ```
 
 ---
-7. AddSpanEvent 添加事件
+#### 2.4 AddSpanEvent 添加事件
 ```
 AddSpanEvent(ctx context.Context, event string, params map[string]string) error
 参数说明:
@@ -79,7 +92,7 @@ AddSpanEvent(ctx context.Context, event string, params map[string]string) error
 ```
 
 ---
-8. SetSpanOK 设置状态为成功
+#### 2.5 SetSpanOK 设置状态为成功
 ```
 SetSpanOK(ctx context.Context, message string) error
 参数说明:
@@ -87,7 +100,8 @@ SetSpanOK(ctx context.Context, message string) error
   * message: 随意文本
 ```
 ---
-9. SetSpanError 设置状态为失败
+
+#### 2.6 SetSpanError 设置状态为失败
 ```
 SetSpanError(ctx context.Context, err error) error
 参数说明:
@@ -96,20 +110,49 @@ SetSpanError(ctx context.Context, err error) error
 ```
 
 ---
-10. IsWork 检查trace是否可用
+
+### 3 HTTP调用
+#### 3.1 NewHandler 给http请求加上hook.
 ```
-IsWork() error
-前面所有函数内部都会调用这个方法。所以不必重复调用。
+NewHandler(handler http.Handler, name string) http.Handler
+参数说明:
+  * handler: http句柄
+  * name: 这个http方法的名字,如：getuser
 ```
 
----
-11. 关闭trace
+#### 3.2 HttpDo 原始的HTTP调用
 ```
-Close(ctx context.Context) error
-SetGrpcExport或者SetDefaultExport之后可以加上defer func(){Close(ctx)}();
+HttpDo(ctx context.Context, req *http.Request, name string, options ...interface{}) (*http.Response, error)
+参数说明:
+    * ctx: 上下文ctx
+    * req: 系统包net/http的request结构
+    * name: 这个HTTP请求的名称.
+    * options: 传递参数(预留), 目前zipkin的包内有处理。
+    * 返回结果：系统包net/http的response结构
 ```
 
----
+
+#### 3.3 HttpGet 简化的封装的HTTP Get调用。
+```
+HttpGet(ctx context.Context, url, name string) (string, error)
+参数说明:
+  * ctx: 上下文ctx
+  * url: http链接
+  * name: 这个HTTP请求的名称.
+  * 返回结果：string 是response body的内容
+```
+
+#### 3.4 HttpPost 简化的封装的HTTP Post调用。
+```
+HttpPost(ctx context.Context, url, contentType, body, name string) (string, error)
+参数说明:
+  * ctx: 上下文ctx
+  * url: http链接
+  * contentType: http头部的Content-Type。
+  * body: HTTP请求body.
+  * name: 这个HTTP请求的名称.
+  * 返回结果：string 是response body的内容
+```
 
 etc..
 
