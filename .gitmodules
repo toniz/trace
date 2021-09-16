@@ -1,3 +1,6 @@
 [submodule "sls-demo"]
 	path = sls-demo
 	url = https://github.com/toniz/SLS-Aliyun
+[submodule "tracing-demo"]
+	path = tracing-demo
+	url = https://github.com/toniz/Tracing-Aliyun
