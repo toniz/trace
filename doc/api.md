@@ -24,6 +24,7 @@ SetDefaultExport(ctx context.Context, serviceName, version string) error
   * serviceName 使用trace的应用的应用名. 具体可以参考: sls-demo/server
   * version 这个应用版本号.
 ```
+---
 ### 2. 设置Span
 #### 2.1 NewSpan 创建一个span  
 ```
@@ -77,6 +78,7 @@ SetSpanError(ctx context.Context, err error) error
   * err: 报错的error.
 ```
 
+---
 ### 3 HTTP调用
 #### 3.1 NewHandler 给http请求加上hook.
 ```
@@ -116,6 +118,7 @@ HttpPost(ctx context.Context, url, contentType, body, name string) (string, erro
   * 返回结果：string 是response body的内容
 ```
 
+---
 ### 其它函数
 #### IsWork 检查trace是否可用
 ```
