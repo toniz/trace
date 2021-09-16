@@ -1,5 +1,6 @@
 ### 函数说明：
-1. SetGrpcExport  使用GRPC协议把日志传到远程的GPRC服务器上, 如阿里云的SLS.
+1. 设置日志导出方案。  
+1.1 SetGrpcExport  使用GRPC协议把日志传到远程的GPRC服务器上, 如阿里云的SLS.
 ```
 SetGrpcExport(ctx context.Context, filename, serviceName, version string) error
 参数说明:
@@ -8,14 +9,23 @@ SetGrpcExport(ctx context.Context, filename, serviceName, version string) error
   * serviceName 使用trace的应用的应用名. 如: OrderService, PaymentService
   * version 这个应用版本号. 如: v1.3.10
 ```
----  
-2. SetDefaultExport 使用默认导出，既直接打印到stdout.
+    
+1.2 SetHttpExport 使用HTTP协议导出到远程的HTTP服务器上, 如阿里云的链路追踪服务.
+```
+SetHttpExport(ctx context.Context, serviceName, version string) error
+参数说明:
+  * serviceName 使用trace的应用的应用名. 具体可以参考: tracing-demo/server
+  * version 这个应用版本号.
+```
+    
+1.3 SetDefaultExport 使用默认导出，既直接打印到stdout.
 ```
 SetDefaultExport(ctx context.Context, serviceName, version string) error
 参数说明:
   * serviceName 使用trace的应用的应用名. 具体可以参考: sls-demo/server
   * version 这个应用版本号.
 ```
+
 ---
 3. NewHandler  给http请求加上hook.
 ```
